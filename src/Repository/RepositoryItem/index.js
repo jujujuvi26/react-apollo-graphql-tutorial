@@ -190,7 +190,7 @@ const RepositoryItem = ({
             mutation={REMOVE_STAR_FROM_REPOSITORY}
             variables={{ repositoryId: id }}
             optimisticResponse={{
-              addStar: {
+              removeStar: {
                 __typename: "Mutation",
                 starrable: {
                   __typename: "Repository",
