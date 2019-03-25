@@ -75,7 +75,7 @@ const updateRemoveStar = (
   client,
   {
     data: {
-      addStar: {
+      removeStar: {
         starrable: { id, viewerHasStarred }
       }
     }
@@ -133,6 +133,18 @@ const RepositoryItem = ({
               ? VIEWER_SUBSCRIPTION_STATE.UNSUBSCRIBED
               : VIEWER_SUBSCRIPTION_STATE.SUBSCRIBED
           }}
+          optimisticResponse={{
+            updateSubscription: {
+              __typename: "Mutation",
+              subscribable: {
+                __typename: "Repository",
+                id,
+                viewerSubscription: isWatch(viewerSubscription)
+                  ? VIEWER_SUBSCRIPTION_STATE.UNSUBSCRIBED
+                  : VIEWER_SUBSCRIPTION_STATE.SUBSCRIBED
+              }
+            }
+          }}
           update={updateWatch}
         >
           {(updateSubscription, { data, loading, error }) => (
@@ -152,6 +164,16 @@ const RepositoryItem = ({
             variables={{
               repositoryId: id
             }}
+            optimisticResponse={{
+              addStar: {
+                __typename: "Mutation",
+                starrable: {
+                  __typename: "Repository",
+                  id,
+                  viewerHasStarred: !viewerHasStarred
+                }
+              }
+            }}
             update={updateAddStar}
           >
             {(addStar, { data, loading, error }) => (
@@ -167,6 +189,16 @@ const RepositoryItem = ({
           <Mutation
             mutation={REMOVE_STAR_FROM_REPOSITORY}
             variables={{ repositoryId: id }}
+            optimisticResponse={{
+              addStar: {
+                __typename: "Mutation",
+                starrable: {
+                  __typename: "Repository",
+                  id,
+                  viewerHasStarred: !viewerHasStarred
+                }
+              }
+            }}
             update={updateRemoveStar}
           >
             {(removeStar, { data, loading, error }) => (
