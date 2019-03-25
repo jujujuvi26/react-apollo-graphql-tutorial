@@ -1,6 +1,6 @@
 import React from "react";
 import { Mutation } from "react-apollo";
-
+import REPOSITORY_FRAGMENT from "../fragments";
 import Link from "../../Link";
 import Button from "../../Button";
 
@@ -19,6 +19,92 @@ const VIEWER_SUBSCRIPTION_STATE = {
 
 const isWatch = viewerSubscription =>
   viewerSubscription === VIEWER_SUBSCRIPTION_STATE.SUBSCRIBED;
+
+const updateWatch = (
+  client,
+  {
+    data: {
+      updateSubscription: {
+        subscribable: { id, viewerSubscription }
+      }
+    }
+  }
+) => {
+  const repository = client.readFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT
+  });
+
+  let { totalCount } = repository.watchers;
+  totalCount =
+    viewerSubscription === VIEWER_SUBSCRIPTION_STATE.SUBSCRIBED
+      ? totalCount + 1
+      : totalCount - 1;
+
+  client.writeFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: {
+      ...repository,
+      watchers: {
+        ...repository.watchers,
+        totalCount
+      }
+    }
+  });
+};
+
+const updateAddStar = (
+  client,
+  {
+    data: {
+      addStar: {
+        starrable: { id, viewerHasStarred }
+      }
+    }
+  }
+) => {
+  client.writeFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: getUpdatedStarData(client, id, viewerHasStarred)
+  });
+};
+
+const updateRemoveStar = (
+  client,
+  {
+    data: {
+      addStar: {
+        starrable: { id, viewerHasStarred }
+      }
+    }
+  }
+) => {
+  client.writeFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT,
+    data: getUpdatedStarData(client, id, viewerHasStarred)
+  });
+};
+
+const getUpdatedStarData = (client, id, viewerHasStarred) => {
+  const repository = client.readFragment({
+    id: `Repository:${id}`,
+    fragment: REPOSITORY_FRAGMENT
+  });
+
+  let { totalCount } = repository.stargazers;
+  totalCount = viewerHasStarred ? totalCount + 1 : totalCount - 1;
+
+  return {
+    ...repository,
+    stargazers: {
+      ...repository.stargazers,
+      totalCount
+    }
+  };
+};
 
 const RepositoryItem = ({
   id,
@@ -44,12 +130,14 @@ const RepositoryItem = ({
           variables={{
             repositoryId: id,
             viewerSubscriptionState: isWatch(viewerSubscription)
+              ? VIEWER_SUBSCRIPTION_STATE.UNSUBSCRIBED
+              : VIEWER_SUBSCRIPTION_STATE.SUBSCRIBED
           }}
+          update={updateWatch}
         >
           {(updateSubscription, { data, loading, error }) => (
             <Button
               className={"RepositoryItem-title-action"}
-              data-test-id={updateSubscription}
               onClick={updateSubscription}
             >
               {watchers.totalCount}{" "}
@@ -64,6 +152,7 @@ const RepositoryItem = ({
             variables={{
               repositoryId: id
             }}
+            update={updateAddStar}
           >
             {(addStar, { data, loading, error }) => (
               <Button
@@ -78,6 +167,7 @@ const RepositoryItem = ({
           <Mutation
             mutation={REMOVE_STAR_FROM_REPOSITORY}
             variables={{ repositoryId: id }}
+            update={updateRemoveStar}
           >
             {(removeStar, { data, loading, error }) => (
               <Button

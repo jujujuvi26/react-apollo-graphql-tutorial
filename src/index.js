@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { ApolloProvider, compose } from "react-apollo";
+import { ApolloProvider } from "react-apollo";
 import { ApolloLink } from "apollo-link";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -16,7 +16,7 @@ const GITHUB_BASE_URL = "https://api.github.com/graphql";
 const httpLink = new HttpLink({
   uri: GITHUB_BASE_URL,
   headers: {
-    Authorization: `Bearer ${
+    authorization: `Bearer ${
       process.env.REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN
     }`
   }

@@ -1,7 +1,7 @@
 import React from "react";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
-import RepositoryList from "../Repository/RepositoryList";
+import RepositoryList, { REPOSITORY_FRAGMENT } from "../Repository/";
 import Loading from "../Loading";
 import ErrorMessage from "../Error";
 
@@ -11,30 +11,14 @@ const GET_REPOSITORIES_FROM_CURRENT_USER = gql`
       repositories(first: 5, orderBy: { direction: DESC, field: STARGAZERS }) {
         edges {
           node {
-            id
-            name
-            url
-            descriptionHTML
-            primaryLanguage {
-              name
-            }
-            owner {
-              login
-              url
-            }
-            stargazers {
-              totalCount
-            }
-            viewerHasStarred
-            watchers {
-              totalCount
-            }
-            viewerSubscription
+            ...repository
           }
         }
       }
     }
   }
+
+  ${REPOSITORY_FRAGMENT}
 `;
 
 const Profile = () => (
