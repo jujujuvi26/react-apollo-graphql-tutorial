@@ -7,15 +7,15 @@ import * as routes from "../constants/routes";
 import "./style.css";
 
 class App extends Component {
+  state = {
+    organizationName: "the-road-to-learn-react"
+  };
+
+  onOrganizationSearch = value => {
+    this.setState({ organizationName: value });
+  };
+
   render() {
-    state = {
-      organizationName: "the-road-to-learn-react"
-    };
-
-    onOrganizationSearch = value => {
-      this.setState({ organizationName: value });
-    };
-
     return (
       <Router>
         <div className="App">
