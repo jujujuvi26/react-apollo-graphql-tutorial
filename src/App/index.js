@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import Navigation from "./Navigation";
 import Profile from "../Profile";
 import Organization from "../Organization";
+import Footer from "./Footer";
 import * as routes from "../constants/routes";
 import "./style.css";
 
@@ -43,6 +44,8 @@ class App extends Component {
               )}
             />
           </div>
+
+          <Footer />
         </div>
       </Router>
     );
