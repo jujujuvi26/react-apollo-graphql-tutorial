@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Query } from "react-apollo";
 import { withState } from "recompose";
 
@@ -57,7 +57,7 @@ const Issues = ({
   repositoryOwner,
   issueState,
   onChangeIssueState
-}) => {
+}) => (
   <div className="Issues">
     <ButtonUnobtrusive
       onClick={() => onChangeIssueState(TRANSITION_STATE[issueState])}
@@ -91,12 +91,12 @@ const Issues = ({
           };
 
           if (!filteredRepository.issues.edges.length) {
-            return <div className="IssueList">No Issue...</div>;
+            return <div className="IssueList">No issue...</div>;
           }
 
           return (
             <IssueList
-              issues={filteredRepository.issues}
+              issues={repository.issues}
               loading={loading}
               repositoryOwner={repositoryOwner}
               repositoryName={repositoryName}
@@ -107,8 +107,8 @@ const Issues = ({
         }}
       </Query>
     )}
-  </div>;
-};
+  </div>
+);
 
 const IssueList = ({
   issues,
@@ -127,7 +127,7 @@ const IssueList = ({
       loading={loading}
       hasNextPage={issues.pageInfo.hasNextPage}
       variables={{
-        cursor: issues.pageInfo.hasNextPage,
+        cursor: issues.pageInfo.endCursor,
         repositoryOwner,
         repositoryName,
         issueState
