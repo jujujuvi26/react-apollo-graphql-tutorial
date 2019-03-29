@@ -21,8 +21,8 @@ const Navigation = ({
     </div>
     {pathname === routes.ORGANIZATION && (
       <OrganizationSearch
-        organizationName={this.state.organizationName}
-        onOrganizationSearch={this.onOrganizationSearch}
+        organizationName={organizationName}
+        onOrganizationSearch={onOrganizationSearch}
       />
     )}
   </header>
